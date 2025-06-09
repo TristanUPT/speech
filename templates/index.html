@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Speech Cleaner – Upload</title>
+</head>
+<body>
+    <h2>Încarcă un fișier audio (.wav / .mp3)</h2>
+    <form method="POST" action="/upload" enctype="multipart/form-data">
+        <input type="file" name="audio_file" accept=".wav,.mp3" required>
+        <button type="submit">Încarcă</button>
+    </form>
+</body>
+</html>

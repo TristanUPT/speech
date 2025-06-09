@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Fișier procesat</title>
+</head>
+<body>
+    <h2>✅ Fișierul a fost procesat!</h2>
+    <p>Original: {{ original }}</p>
+    <p>Procesat: <a href="{{ url_for('download_file', filename=processed) }}">Descarcă {{ processed }}</a></p>
+    <br>
+    <a href="{{ url_for('index') }}">Încarcă alt fișier</a>
+</body>
+</html>
