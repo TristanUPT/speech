@@ -2,13 +2,73 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <title>Fișier procesat</title>
+    <title>Rezultat – Speech Cleaner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin: 1rem 0;
+        }
+
+        a.button {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        a.button:hover {
+            background: #218838;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 1.5rem;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h2>✅ Fișierul a fost procesat!</h2>
-    <p>Original: {{ original }}</p>
-    <p>Procesat: <a href="{{ url_for('download_file', filename=processed) }}">Descarcă {{ processed }}</a></p>
-    <br>
-    <a href="{{ url_for('index') }}">Încarcă alt fișier</a>
+    <div class="container">
+        <h2>Fișierul a fost procesat cu succes ✅</h2>
+
+        <p><strong>Original:</strong> {{ original }}</p>
+        <p><strong>Procesat:</strong> {{ processed }}</p>
+
+        <a class="button" href="{{ url_for('download_file', filename=processed) }}">Descarcă fișierul curățat</a>
+
+        <a class="back-link" href="{{ url_for('index') }}">← Încarcă un alt fișier</a>
+    </div>
 </body>
 </html>

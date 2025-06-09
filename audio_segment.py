@@ -1,8 +1,8 @@
 
 import subprocess
-import io
 import os
 import tempfile
+import scipy.io.wavfile as wavfile
 
 class AudioSegment:
     def __init__(self, raw_data: bytes):
@@ -10,7 +10,7 @@ class AudioSegment:
 
     @classmethod
     def from_file(cls, file_path):
-        # Convertim la WAV PCM 16-bit mono cu ffmpeg
+        # Convertim orice fișier audio în WAV PCM 16-bit mono folosind ffmpeg
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
             tmp_path = tmp.name
 
@@ -32,6 +32,32 @@ class AudioSegment:
         finally:
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
+
+    def to_numpy(self):
+        # Returnează sample rate și array audio din self.raw_data
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+            tmp.write(self.raw_data)
+            tmp.flush()
+            rate, data = wavfile.read(tmp.name)
+        os.remove(tmp.name)
+        return rate, data
+
+    @classmethod
+    def from_numpy(cls, rate, data):
+        import numpy as np
+        import tempfile
+        import scipy.io.wavfile as wavfile
+
+        # Asigură-te că e PCM 16-bit (int16)
+        if data.dtype != np.int16:
+            data = (data * 32767).astype(np.int16)
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+            wavfile.write(tmp.name, rate, data)
+            tmp.seek(0)
+            raw = tmp.read()
+        os.remove(tmp.name)
+        return cls(raw)
 
     def export(self, out_f, format="wav"):
         with open(out_f, 'wb') as f:

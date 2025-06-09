@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+
+from flask import Flask, render_template, request, send_from_directory
 import os
 from werkzeug.utils import secure_filename
 from audio_segment import AudioSegment
-
-
+from audio_effects import reduce_noise, normalize_audio, auto_trim_silence, manual_trim
 
 app = Flask(__name__)
+
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
@@ -37,19 +38,40 @@ def upload_file():
         input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(input_path)
 
-        # Procesare dummy: încărcăm fișierul cu pydub și îl salvăm în formatul opus
-        ext = filename.rsplit('.', 1)[1].lower()
-        base_name = filename.rsplit('.', 1)[0]
-
+        # Procesare audio
         audio = AudioSegment.from_file(input_path)
-        output_filename = base_name + ('.mp3' if ext == 'wav' else '.wav')
+        rate, data = audio.to_numpy()
+
+        # Aplică efecte
+        data = reduce_noise(data, rate)
+        data = normalize_audio(data)
+        data = auto_trim_silence(data, rate)
+
+        # Extrage trim manual dacă există
+        try:
+            start_sec = float(request.form.get('start_sec', 0))
+        except ValueError:
+            start_sec = 0.0
+        try:
+            end_sec = float(request.form.get('end_sec')) if request.form.get('end_sec') else None
+        except ValueError:
+            end_sec = None
+
+        data = manual_trim(data, rate, start_sec=start_sec, end_sec=end_sec)
+
+        # Reconstruim fișierul audio
+        audio = AudioSegment.from_numpy(rate, data)
+
+        # Salvăm rezultatul
+        base_name = filename.rsplit('.', 1)[0]
+        output_filename = base_name + "_processed.wav"
         output_path = os.path.join(app.config['PROCESSED_FOLDER'], output_filename)
-        audio.export(output_path, format=output_filename.rsplit('.', 1)[1])
+        audio.export(output_path, format="wav")
 
         return render_template('result.html', original=filename, processed=output_filename)
 
     else:
-        return "Format fișier neacceptat.", 400
+        return "Format fișier neacceptat. Doar .wav sau .mp3.", 400
 
 @app.route('/download/<filename>')
 def download_file(filename):

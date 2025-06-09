@@ -3,12 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>Speech Cleaner – Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        input[type="file"],
+        input[type="number"],
+        input[type="submit"] {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        input[type="submit"] {
+            background: #007BFF;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background: #0056b3;
+        }
+
+        .range-inputs {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        label {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h2>Încarcă un fișier audio (.wav / .mp3)</h2>
-    <form method="POST" action="/upload" enctype="multipart/form-data">
-        <input type="file" name="audio_file" accept=".wav,.mp3" required>
-        <button type="submit">Încarcă</button>
-    </form>
+    <div class="container">
+        <h2>Încarcă un fișier audio (.wav / .mp3)</h2>
+        <form method="POST" action="/upload" enctype="multipart/form-data">
+            <input type="file" name="audio_file" required>
+
+            <div class="range-inputs">
+                <label for="start_sec">Start (sec):</label>
+                <input type="number" name="start_sec" min="0" step="0.1">
+
+                <label for="end_sec">End (sec):</label>
+                <input type="number" name="end_sec" min="0" step="0.1">
+            </div>
+
+            <input type="submit" value="Încarcă">
+        </form>
+    </div>
 </body>
 </html>
