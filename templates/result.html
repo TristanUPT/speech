@@ -27,9 +27,13 @@
             color: #333;
         }
 
-        p {
-            font-size: 1.1rem;
-            margin: 1rem 0;
+        audio {
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        .preview {
+            margin-top: 1.5rem;
         }
 
         a.button {
@@ -61,14 +65,26 @@
 </head>
 <body>
     <div class="container">
-        <h2>Fișierul a fost procesat cu succes ✅</h2>
+        <h2>Fișier procesat cu succes ✅</h2>
 
-        <p><strong>Original:</strong> {{ original }}</p>
-        <p><strong>Procesat:</strong> {{ processed }}</p>
+        <div class="preview">
+            <p><strong>Previzualizare fișier original:</strong></p>
+            <audio controls>
+                <source src="{{ url_for('static', filename='originals/' + original) }}" type="audio/wav">
+                Browserul tău nu suportă audio.
+            </audio>
+        </div>
+
+        <div class="preview">
+            <p><strong>Previzualizare fișier curățat:</strong></p>
+            <audio controls>
+                <source src="{{ url_for('static', filename='processed/' + processed) }}" type="audio/wav">
+                Browserul tău nu suportă audio.
+            </audio>
+        </div>
 
         <a class="button" href="{{ url_for('download_file', filename=processed) }}">Descarcă fișierul curățat</a>
-
-        <a class="back-link" href="{{ url_for('index') }}">← Încarcă un alt fișier</a>
+        <a class="back-link" href="{{ url_for('index') }}">← Încarcă alt fișier</a>
     </div>
 </body>
 </html>

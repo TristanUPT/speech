@@ -37,3 +37,19 @@ def manual_trim(audio_data, sample_rate=44100, start_sec=0, end_sec=None):
     end_index = int(end_sec * sample_rate) if end_sec else len(audio_data)
     
     return audio_data[start_index:end_index]
+
+def compress_audio(audio_data, threshold_db=-20.0, ratio=4.0):
+    """
+    Aplică o compresie dinamică simplă asupra semnalului.
+    threshold_db: pragul peste care se aplică compresia (ex: -20 dB)
+    ratio: raportul de compresie (ex: 4.0 = 4:1)
+    """
+    threshold = 10 ** (threshold_db / 20.0)  # convertim dB în amplitudine (0–1)
+    compressed = np.copy(audio_data)
+
+    above_threshold = np.abs(audio_data) > threshold
+    compressed[above_threshold] = np.sign(audio_data[above_threshold]) * (
+        threshold + (np.abs(audio_data[above_threshold]) - threshold) / ratio
+    )
+
+    return compressed
