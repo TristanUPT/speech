@@ -4,7 +4,7 @@ import os
 from werkzeug.utils import secure_filename
 from shutil import copyfile
 from audio_segment import AudioSegment
-from audio_effects import reduce_noise, normalize_audio, auto_trim_silence, manual_trim, compress_audio
+from audio_effects import reduce_noise, normalize_audio, auto_trim_silence, manual_trim
 
 app = Flask(__name__)
 
@@ -23,7 +23,7 @@ os.makedirs(STATIC_ORIGINALS, exist_ok=True)
 os.makedirs(STATIC_PROCESSED, exist_ok=True)
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower().lower() in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def index():
@@ -35,6 +35,8 @@ def upload_file():
         return "Nu ai selectat niciun fișier.", 400
 
     file = request.files['audio_file']
+    print('Fișier primit:', file.filename)
+    print('Extensie validă:', allowed_file(file.filename))
     if file.filename == '':
         return "Nume fișier invalid.", 400
 
@@ -49,7 +51,6 @@ def upload_file():
 
         data = reduce_noise(data, rate)
         data = normalize_audio(data)
-        data = compress_audio(data, threshold_db=-20.0, ratio=4.0)
         data = auto_trim_silence(data, rate)
 
         # Extrage trim manual dacă există
