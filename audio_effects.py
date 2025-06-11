@@ -2,6 +2,8 @@
 import numpy as np
 import noisereduce as nr
 import scipy.io.wavfile as wavfile
+from scipy.fft import rfft, irfft, rfftfreq
+
 
 def reduce_noise(audio_data, sample_rate=44100):
     # Reduce zgomotul folosind noisereduce
@@ -64,4 +66,39 @@ def apply_gate(audio_data, threshold_db=-35.0):
 
     gated[np.abs(audio_data) < threshold] = 0.0
     return gated
+"""
+def apply_eq(data, sample_rate, preset):
+    print("apply_eq called with preset:", preset)
+    return data
+"""
+def apply_eq(audio_data, sample_rate=44100, preset="flat"):
+    import numpy as np
+    from scipy.fft import rfft, irfft, rfftfreq
 
+    presets = {
+        "flat":     [1, 1, 1, 1, 1, 1, 1],
+        "vocal":    [0.8, 0.9, 1, 1.2, 1.3, 1.2, 1.1],
+        "broadcast": [0.7, 0.8, 1, 1.1, 1.2, 1.2, 1.3]
+    }
+    gains = presets.get(preset.lower(), presets["flat"])
+
+    # Convert int16 input to float in range [-1, 1]
+    if audio_data.dtype == np.int16:
+        audio_data = audio_data.astype(np.float32) / 32768.0
+
+    freqs = rfftfreq(len(audio_data), d=1/sample_rate)
+    spectrum = rfft(audio_data)
+
+    bands = [60, 170, 310, 600, 1000, 3000, 6000, sample_rate//2]
+
+    for i in range(7):
+        band_start = bands[i]
+        band_end = bands[i+1]
+        idx = np.where((freqs >= band_start) & (freqs < band_end))[0]
+        spectrum[idx] *= gains[i]
+
+    processed = irfft(spectrum)
+    processed = np.clip(processed, -1.0, 1.0)
+
+    # Return float, let the main pipeline convert to int16 if needed
+    return processed

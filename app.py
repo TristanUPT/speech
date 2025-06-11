@@ -4,7 +4,7 @@ import os
 from werkzeug.utils import secure_filename
 from shutil import copyfile
 from audio_segment import AudioSegment
-from audio_effects import reduce_noise, normalize_audio, auto_trim_silence, manual_trim, compress_audio, apply_gate
+from audio_effects import reduce_noise, normalize_audio, auto_trim_silence, manual_trim, compress_audio, apply_gate, apply_eq
 
 app = Flask(__name__)
 
@@ -50,7 +50,8 @@ def upload_file():
             'use_normalize' in request.form or
             'use_auto_trim' in request.form or
             'use_compressor' in request.form or
-            'use_gate' in request.form
+            'use_gate' in request.form or
+            'use_eq' in request.form
         )
         if not effects_selected:
             error_message = "Please select at least one effect."
@@ -108,6 +109,16 @@ def upload_file():
         if use_gate:
             data = apply_gate(data, threshold_db=gate_threshold_db)
 
+        # ...after gate logic...
+        use_eq = 'use_eq' in request.form
+        if use_eq:
+            eq_preset = request.form.get('eq_preset', 'flat')
+            print(f"EQ preset selectat: {eq_preset}")
+            data = apply_eq(data, sample_rate=rate, preset=eq_preset)
+            print("EQ output min/max:", data.min(), data.max(), "dtype:", data.dtype)
+        else:
+            print("EQ nu este activat.")
+# ...continue with print('Durată audio (sec):', audio_duration_sec)...
 
         print('Durată audio (sec):', audio_duration_sec)
         print('Dimensiune date audio:', data.shape)
