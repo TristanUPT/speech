@@ -50,6 +50,8 @@ class AudioSegment:
 
         # Asigură-te că e PCM 16-bit (int16)
         if data.dtype != np.int16:
+            data = np.clip(data, -1.0, 1.0)
+            # Normalizează la intervalul [-1, 1]
             data = (data * 32767).astype(np.int16)
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:

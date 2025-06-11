@@ -53,3 +53,15 @@ def compress_audio(audio_data, threshold_db=-20.0, ratio=4.0):
     )
 
     return compressed
+
+def apply_gate(audio_data, threshold_db=-35.0):
+    """
+    Înlocuiește cu zero toate valorile sub pragul în dB.
+    """
+    # Convertim dB în amplitudine (0–1)
+    threshold = 10 ** (threshold_db / 20.0)
+    gated = np.copy(audio_data)
+
+    gated[np.abs(audio_data) < threshold] = 0.0
+    return gated
+

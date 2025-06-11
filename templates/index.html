@@ -91,6 +91,17 @@
             </div>
 
             
+
+<div>
+  <label><input type="checkbox" name="use_reduce_noise" checked> Reduce Noise</label>
+</div>
+<div>
+  <label><input type="checkbox" name="use_normalize" checked> Normalize</label>
+</div>
+<div>
+  <label><input type="checkbox" name="use_auto_trim" checked> Auto Trim Silence</label>
+</div>
+
 <div>
   <label><input type="checkbox" name="use_compressor" checked> Activează compresor</label>
 </div>
@@ -102,6 +113,16 @@
   <br>
   <label>Ratio: <span id="ratio-val">4</span>
     <input type="range" name="ratio" min="1" max="20" step="0.5" value="4" oninput="document.getElementById('ratio-val').innerText = this.value">
+  </label>
+</div>
+
+<div>
+  <label><input type="checkbox" name="use_gate" checked> Activează gate</label>
+</div>
+
+<div id="gate-settings" style="margin-left: 1em;">
+  <label>Gate Threshold (dB): <span id="gate-thresh-val">-35</span>
+    <input type="range" name="gate_threshold_db" min="-80" max="0" value="-35" oninput="document.getElementById('gate-thresh-val').innerText = this.value">
   </label>
 </div>
 
